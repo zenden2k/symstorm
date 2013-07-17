@@ -1,0 +1,28 @@
+<idea-plugin version="2">
+  <id>ws.zenden.symstorm</id>
+  <name>SymStorm</name>
+  <description>Symfony 2 integration for PHPStorm</description>
+  <version>0.1</version>
+  <vendor email="zenden2k@gmail.com" url="http://zenden.ws"/>
+  <idea-version since-build="129.713"/>
+
+    <actions>
+        <action id="ws.zenden.symstorm.JumpToController" class="ws.zenden.symstorm.JumpToController" text="Jump to Controller">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift k"/>
+        </action>
+    </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <projectConfigurable  implementation="ws.zenden.symstorm.PluginSettingsPage" />
+
+    </extensions>
+
+    <depends>com.jetbrains.php</depends>
+    <depends>com.intellij.modules.platform</depends>
+
+    <project-components>
+        <component>
+            <implementation-class>ws.zenden.symstorm.SymStormProjectComponent</implementation-class>
+        </component>
+    </project-components>
+</idea-plugin>
