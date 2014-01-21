@@ -25,4 +25,9 @@
             <implementation-class>ws.zenden.symstorm.SymStormProjectComponent</implementation-class>
         </component>
     </project-components>
+    <application-components>
+        <component>
+            <implementation-class>ws.zenden.symstorm.SymStormApplicationComponent</implementation-class>
+        </component>
+    </application-components>
 </idea-plugin>

@@ -10,7 +10,19 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.codeInsight.navigation.NavigationUtil;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
+import com.jetbrains.php.lang.psi.PhpFile;
+import com.jetbrains.php.lang.psi.PhpFileImpl;
+import com.jetbrains.php.lang.psi.elements.*;
+import org.codehaus.jettison.json.JSONObject;
+import org.jaxen.function.StringFunction;
+
+import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class JumpToController extends AnAction implements DumbAware, MyModel.Callback {
@@ -31,8 +43,12 @@ public class JumpToController extends AnAction implements DumbAware, MyModel.Cal
         this.project = project;
         VirtualFile baseDir = project.getBaseDir();
         VirtualFile webDir = baseDir;
+
+//        res +=  phpFile.getText() +  "\r\n";
         showNavigationPopup(e, new MyGotoFileModel(project, webDir), this, "title");
     }
+    
+
 
     protected <T> void showNavigationPopup(AnActionEvent e, MyModel model, MyModel.Callback callback/*, final GotoActionCallback<T> callback*/) {
         showNavigationPopup(e, model, callback, null);

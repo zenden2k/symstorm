@@ -8,21 +8,29 @@ import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.SystemInfo;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ex.WindowManagerEx;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import com.jetbrains.php.PhpIndex;
-import com.jetbrains.php.lang.psi.elements.PhpNamedElement;
+import com.jetbrains.php.lang.psi.PhpFile;
+import com.jetbrains.php.lang.psi.PhpFileImpl;
+import com.jetbrains.php.lang.psi.elements.*;
 import com.jetbrains.php.lang.psi.elements.impl.MethodImpl;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.net.util.Base64;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONObject;
+import org.intellij.plugins.relaxNG.compact.psi.util.EscapeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.io.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MyGotoFileModel implements MyModel {
@@ -33,6 +41,9 @@ public class MyGotoFileModel implements MyModel {
   String cachedPattern = null;
   Project myProject  = null;
   VirtualFile webDir;
+
+
+
 
 
   public MyGotoFileModel(Project project,  VirtualFile webDir ) {
@@ -116,11 +127,11 @@ public class MyGotoFileModel implements MyModel {
     }
 
     public String getElementName(Object element) {
-        return "ololo";
+        return "myGotoFileModel";
     }
 
     public String[] getNames(boolean checkBoxState) {
-        return new String[]{ "ha", "bred" };
+        return new String[]{ };
     }
 
     public Object[] getElementsByPattern(String userPattern) {
@@ -141,42 +152,33 @@ public class MyGotoFileModel implements MyModel {
 
         }
 
-        try {
-
+//        System.out.println(path);
+        if ( !path.isEmpty() ) {
             SymStormProjectComponent projectComponent = myProject.getComponent(SymStormProjectComponent.class);
-            ArrayList<RoutingDumpReader.Entry>list =  projectComponent.getRoutes();
-
-
-            for ( RoutingDumpReader.Entry entry: list ) {
-                Pattern p = Pattern.compile(entry.rewriteCond) ;
-                if ( p.matcher(path).matches() ) {
-                    MethodImpl el = (MethodImpl)getPsiElement(entry.controller);
-                    if ( el != null ) {
-                        MyListElement mle = new MyListElement(
-                                "",el.getContainingFile().getVirtualFile()
-                                ,"controller",el.getContainingClass().getName() + "::" + el.getName());
-                        mle.psiElement = el;
-                        elements.add(mle);
-                    }
+            String controller = projectComponent.getController(path);
+            if ( controller != null ) {
+                MethodImpl el = (MethodImpl)getPsiElement(controller);
+                if ( el != null ) {
+                    MyListElement mle = new MyListElement(
+                            "",el.getContainingFile().getVirtualFile()
+                            ,"controller",el.getContainingClass().getName() + "::" + el.getName());
+                    mle.psiElement = el;
+                    elements.add(mle);
                 }
             }
-        }    catch ( Exception ex) {
-               System.err.println("Error while executing command");
-        }
-        finally {
-            //is.close();
         }
         return elements.toArray();
-
     }
+
 
     PsiElement getPsiElement(String controller) {
         PhpIndex phpIndex = PhpIndex.getInstance(myProject);
 
         String controllerName = controller;
+        controllerName = controllerName.replace("\\:",":");
 
         if(controllerName.contains(":")) {
-            String className = controllerName.substring(0, controllerName.indexOf("\\:"));
+            String className = controllerName.substring(0, controllerName.indexOf(":"));
             className = className.replace("\\\\","\\");
             String methodName = controllerName.substring(controllerName.lastIndexOf(":") + 1);
 
@@ -190,5 +192,9 @@ public class MyGotoFileModel implements MyModel {
             }
         }
         return null;
+    }
+
+    private String getPath(Project project, String path) {
+        return project.getBasePath() + "/" + path;
     }
 }

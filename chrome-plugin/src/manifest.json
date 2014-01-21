@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+
+  "name": "SymStorm plugin",
+  "description": "Symfony2 integration plugin",
+  "version": "1.0",
+
+  "permissions": [
+	"tabs",
+    "http://localhost/*",
+    "http://seldusjalfur/*"
+  ],
+  "browser_action": {
+    "default_icon": "icon.png"
+  //  "default_popup": "popup.html"
+  },
+  "background": {
+    "page": "background.html"
+  },
+  "content_scripts": [
+    {
+        "matches": ["http://*/*","https://*/*"],
+        "js": ["content-script.js"]
+     }
+  ]
+}

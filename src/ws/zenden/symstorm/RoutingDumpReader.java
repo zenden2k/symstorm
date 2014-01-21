@@ -42,9 +42,9 @@ public class RoutingDumpReader {
                 if ( tokens.length >= 4 ) {
 
                     String rewriteRuleParams = tokens[3];
-                    Matcher matcher = Pattern.compile("_ROUTING_DEFAULTS__controller:([^\\],]+)").matcher(rewriteRuleParams);
+                    Matcher matcher = Pattern.compile("(?i)_ROUTING_DEFAULTS?__controller:([^\\],]+)").matcher(rewriteRuleParams);
                     
-                    while(matcher.find()){
+                    if(matcher.find()){
                         entry.controller = matcher.group(1);
                         entries.add(entry);
                     }
